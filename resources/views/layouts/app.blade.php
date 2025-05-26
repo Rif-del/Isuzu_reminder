@@ -11,9 +11,12 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        <!-- Styles & Scripts from Vite Build -->
-        <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
-        <script type="module" src="{{ asset('build/assets/app.js') }}"></script>
+        <!-- Vite Build Assets -->
+        @php
+            $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
+        @endphp
+        <link rel="stylesheet" href="{{ asset('build/' . $manifest['resources/css/app.css']['file']) }}">
+        <script type="module" src="{{ asset('build/' . $manifest['resources/js/app.js']['file']) }}"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
