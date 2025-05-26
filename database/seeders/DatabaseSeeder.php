@@ -8,6 +8,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(AdminUserSeeder::class);
+        // Kosongkan dulu, seeder dijalankan manual nanti via shell
     }
 }
