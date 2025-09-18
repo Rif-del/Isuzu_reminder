@@ -6,7 +6,7 @@ use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PengingatPembayaranMail;
-
+ use Illuminate\Support\Facades\Artisan;
 // ===========================
 // Tes Kirim Email Sementara
 // ===========================
@@ -59,3 +59,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Otentikasi
 require __DIR__.'/auth.php';
+
+// Rute untuk Cron Job Eksternal
+Route::get('/scheduler', function () {
+    // Pastikan token rahasia dari .env cocok
+    if (request('token') !== env('SCHEDULER_TOKEN')) {
+        abort(403);
+    }
+    
+    // Jalankan scheduler
+    Artisan::call('schedule:run');
+    return "Scheduler berhasil dijalankan!";
+});
