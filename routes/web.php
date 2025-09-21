@@ -4,24 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\PengingatPembayaranMail;
 use Illuminate\Support\Facades\Artisan;
-// ===========================
-// Tes Kirim Email Sementara
-// ===========================
-Route::get('/tes-email', function () {
-    $data = [
-        'nama' => 'Randy',
-        'barang' => 'Sparepart Mesin',
-        'tanggal_bayar' => now()->addDays(2)->format('d-m-Y'),
-    ];
-
-    Mail::to('rifkhisiddo@gmail.com')->send(new PengingatPembayaranMail($data));
-
-    return "✅ Email berhasil dikirim ke inbox!";
-});
-
 // ===========================
 // Halaman Awal (Tanpa Login)
 // ===========================
@@ -58,7 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Otentikasi
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 // Rute untuk Cron Job Eksternal
 Route::get('/scheduler', function () {
