@@ -21,6 +21,9 @@ class PengingatEmail extends Mailable
     public function build()
     {
         return $this->subject('Pengingat Pembayaran')
-                    ->view('emails.pengingat');
+                    ->view('emails.pengingat')
+                    ->with([
+                        'transaksi' => $this->transaksi
+                    ]);
     }
 }
