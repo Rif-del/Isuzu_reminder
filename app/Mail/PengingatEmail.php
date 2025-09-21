@@ -23,7 +23,7 @@ class PengingatEmail extends Mailable
         return $this->subject('Pengingat Pembayaran')
                     ->view('emails.pengingat')
                     ->with([
-                        'transaksi' => $this->transaksi
+                        'transaksi' => $this->transaksi  // <- ini wajib, biar $transaksi tersedia di Blade
                     ]);
     }
 }
