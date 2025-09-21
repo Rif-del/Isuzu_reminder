@@ -5,12 +5,26 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransaksiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+
+// ===========================
+// Route untuk Cron Job Email Reminder
+// ===========================
+Route::get('/cron-reminders', function () {
+    try {
+        Artisan::call('reminders:send');
+        return response('Email reminder dijalankan!', 200);
+    } catch (\Exception $e) {
+        // Menangkap error supaya cron tidak gagal total
+        return response('Terjadi error: ' . $e->getMessage(), 500);
+    }
+});
 // ===========================
 // Halaman Awal (Tanpa Login)
 // ===========================
 Route::get('/', function () {
     return view('welcome');
 });
+
 
 // ===========================
 // Rute yang Perlu Login

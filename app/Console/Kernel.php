@@ -4,7 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Log; // ✅ Tambahkan ini
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 
 use App\Console\Commands\SendPaymentReminders;
 
@@ -16,10 +17,12 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule): void
     {
-        // Jalankan perintah pengingat setiap hari pada jam 8 pagi
-        $schedule->command('reminders:send')->dailyAt('08:00');
+        $schedule->command('reminders:send')
+                 ->dailyAt('08:00')
+                 ->onFailure(function () {
+                     Log::error('Pengiriman email reminder gagal.');
+                 });
     }
-
 
     protected function commands(): void
     {
