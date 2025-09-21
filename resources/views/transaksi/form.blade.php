@@ -9,6 +9,10 @@
         </h2>
     </x-slot>
 
+    <input type="text" name="nama" 
+       value="{{ old('nama', $transaksi->nama ?? '') }}">
+
+
     <div class="py-12">
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8 bg-white p-6 rounded shadow">
             <form method="POST" action="{{ isset($transaksi) ? route('transaksi.update', $transaksi->id) : route('transaksi.store') }}">
