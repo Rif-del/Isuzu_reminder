@@ -12,15 +12,21 @@ class PengingatPembayaranMail extends Mailable
 
     public $data;
 
+    /**
+     * Buat mailer dengan data transaksi
+     */
     public function __construct($data)
     {
         $this->data = $data;
     }
 
+    /**
+     * Bangun email
+     */
     public function build()
     {
-        return $this->subject('🔔 Pengingat Pembayaran')
-                    ->markdown('emails.pengingat')
+        return $this->subject('Pengingat Pembayaran')
+                    ->view('emails.pengingat')
                     ->with('data', $this->data);
     }
 }
