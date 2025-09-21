@@ -1,24 +1,26 @@
 <?php
 
-use Illuminate\Support\Facades\Route;   // <- ini penting
-use Illuminate\Support\Facades\Mail;
-use App\Mail\PengingatEmail;
+namespace App\Mail;
+
 use App\Models\Transaksi;
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 
-Route::get('/test-email', function () {
-    $transaksi = Transaksi::first();
+class PengingatEmail extends Mailable
+{
+    use Queueable, SerializesModels;
 
-    if (!$transaksi) {
-        $transaksi = new Transaksi([
-            'nama' => 'Rusdi',
-            'barang' => 'Laptop Asus',
-            'tanggal_bayar' => now()->addDays(3),
-            'status' => 'Belum Lunas',
-            'email' => 'tes@example.com'
-        ]);
+    public $transaksi;
+
+    public function __construct(Transaksi $transaksi)
+    {
+        $this->transaksi = $transaksi;
     }
 
-    Mail::to($transaksi->email ?? 'tes@example.com')->send(new PengingatEmail($transaksi));
-
-    return "Email pengingat sudah dikirim!";
-});
+    public function build()
+    {
+        return $this->subject('Pengingat Pembayaran')
+                    ->view('emails.pengingat');
+    }
+}

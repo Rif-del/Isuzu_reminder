@@ -3,34 +3,44 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Models\Transaksi; // Pastikan Anda sudah punya model Transaksi
-use App\Mail\PengingatPembayaranMail;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\PengingatPembayaranMail;
+use App\Models\Transaksi;
 
 class SendPaymentReminders extends Command
 {
-    protected $signature = 'reminders:send'; // Nama perintah Anda
-    protected $description = 'Kirim email pengingat untuk transaksi yang jatuh tempo.';
+    // Signature harus sama dengan Kernel
+    protected $signature = 'reminders:send';
+
+    protected $description = 'Kirim email pengingat pembayaran ke customer sesuai tanggal jatuh tempo';
 
     public function handle()
     {
-        // Ambil semua transaksi yang statusnya 'Belum Bayar' dan tanggal jatuh temponya hari ini
-        $transaksi = Transaksi::where('status_bayar', 'belum_bayar')
-                            ->where('tanggal_jatuh_tempo', now()->format('Y-m-d'))
-                            ->get();
+        // Ambil transaksi yang jatuh tempo hari ini
+        $transaksis = Transaksi::whereDate('tanggal_bayar', now()->toDateString())
+            ->where('status', 'Belum Lunas')
+            ->get();
 
-        $this->info("Menemukan " . $transaksi->count() . " transaksi yang jatuh tempo hari ini.");
+        if ($transaksis->isEmpty()) {
+            $this->info('Tidak ada transaksi jatuh tempo hari ini.');
+            return 0;
+        }
 
-        foreach ($transaksi as $item) {
-            try {
-                // Kirim email
-                Mail::to($item->email_customer)->send(new PengingatPembayaranMail($item));
+        foreach ($transaksis as $transaksi) {
+            if ($transaksi->email) {
+                Mail::to($transaksi->email)->send(new PengingatPembayaranMail([
+                    'nama'          => $transaksi->nama,
+                    'barang'        => $transaksi->barang,
+                    'tanggal_bayar' => $transaksi->tanggal_bayar,
+                    'status'        => $transaksi->status,
+                ]));
 
-                $this->info("✅ Pengingat berhasil dikirim untuk transaksi ID: " . $item->id);
-            } catch (\Exception $e) {
-                $this->error("❌ Gagal mengirim pengingat untuk transaksi ID: " . $item->id . ". Error: " . $e->getMessage());
+                $this->info("Email pengingat terkirim ke {$transaksi->email}");
+            } else {
+                $this->warn("Transaksi ID {$transaksi->id} tidak punya email.");
             }
         }
-        $this->info("Proses pengiriman pengingat selesai.");
+
+        return 0;
     }
 }
